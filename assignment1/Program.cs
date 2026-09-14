@@ -14,7 +14,8 @@ namespace assignment1
             Setup_Combat,
             Enemy_Attack,
             Player_Choose_Combat,
-            Player_Choose_Defend
+            Player_Choose_Defend,
+            Explore
         }
         static void Main(string[] args)
         {

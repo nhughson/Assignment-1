@@ -13,6 +13,7 @@ namespace assignment1
         string text_id = "start";
         string checkpoint_id = "start";
         string next_id = "start";
+        bool skip = false;
         Player player = new Player();
         
         STATE state = STATE.Dialogue;
@@ -30,38 +31,39 @@ namespace assignment1
         Text text = new Text();
         Random rnd = new Random();
 
+        Map map = new Map();
+
         public void setup() 
         {
             player.update_items();
+            map.setup();
         }
         public void tick() 
         {
-            if (state == STATE.End_Game)
+            switch(state)
             {
-                //end game
-                running = false;
-            }
-            while (state == STATE.Dialogue)
-            {
-                run_dialogue();
-            }
-            while (state == STATE.Setup_Combat)
-            {
-                setup_combat();
-            }
-            while (state == STATE.Enemy_Attack)
-            {
-                enemy_attack();
-
-            }
-            while (state == STATE.Player_Choose_Defend)
-            {
-                player_defend();
-            }
-
-            while (state == STATE.Player_Choose_Combat)
-            {
-                player_attack();
+                case STATE.End_Game:
+                    //end game
+                    running = false;
+                    break;
+                case STATE.Dialogue:
+                    run_dialogue();
+                    break;
+                case STATE.Setup_Combat:
+                    setup_combat();
+                    break;
+                case STATE.Enemy_Attack:
+                    enemy_attack();
+                    break;
+                case STATE.Player_Choose_Defend:
+                    player_defend();
+                    break;
+                case STATE.Player_Choose_Combat:
+                    player_attack();
+                    break;
+                case STATE.Explore:
+                    explore();
+                    break;
             }
         }
 
@@ -135,6 +137,7 @@ namespace assignment1
 
         private void run_dialogue() 
         {
+            skip = false;
             text.option_ids = [];
             text.option_names = [];
             text.text_queue = [];
@@ -145,47 +148,66 @@ namespace assignment1
             switch (text_id)
             {
                 case "start":
-                    text.add("Hello world");
-                    text.add("Input your name");
-                    text.add("Select an option:", false);
-                    text.option_ids = ["option 1", "number 2"];
-                    text.option_names = ["Option 1", "Option 2"];
+                    text.add("Hello.", 250);
+                    text.add("What is your name?");
                     take_input_index = 1;
                     input_variable = "name";
+                    text.add("What a nice name.");
+                    skip = true;
+                    next_id = "start part 2";
                     break;
-                case "option 1":
-                    text.add("This is Option 1!" + player.name);
-                    change_state = STATE.End_Game;
+                case "start part 2":
+                    text.add(". . . sorry what was your name again?");
+                    text.option_ids = ["XDDCC", "name", "ena"];
+                    text.option_names = ["XDDCC", player.name, "ENA"];
                     break;
-                case "number 2":
-                    text.add("This is Option 2!" + player.name);
-                    change_state = STATE.Setup_Combat;
+                case "name":
+                    text.add($"Ah yes, {player.name}. What a lovely name.");
+                    skip = true;
+                    next_id = "forget name";
+                    break;
+                case "XDDCC":
+                    text.add($"Ah yes, XDDCC. What a lovely name.");
+                    skip = true;
+                    next_id = "forget name";
+                    break;
+                case "ENA":
+                    text.add($"Ah yes, ENA. What a lovely name.");
+                    skip = true;
+                    next_id = "forget name";
+                    break;
+                case "forget name":
+                    text.add("I won't remember that.");
+                    text.add("And neither will anyone else.");
+                    text.add("Goodbye, Kaneis."); // this is supposed to be greek for nobody anglocized, will have to revise based on pronunciation later.
+                    
                     break;
             }
 
             for (int i = 0; i < text.text_queue.Count; i++)
             {
-                text.write_text(i);
+                text.write_text(i, take_input_index == i);
                 if (take_input_index == i)
                 {
                     switch (input_variable)
                     {
                         case "name":
-                            /*bool input_valid = false;
+                            Console.ReadLine();
+                            bool input_valid = false;
                             string input = "";
                             while (!input_valid) 
                             {
                                 input = Console.ReadLine();
-                                if (input.Length > 10)
+                                if (input.Length < 1)
                                 {
-                                    Console.WriteLine("Please input a shorter name.");
+                                    Console.WriteLine("Please input a name.");
                                 }
                                 else 
                                 {
                                     input_valid = true;
                                 }
-                            }*/
-                            player.name = Console.ReadLine();
+                            }
+                            player.name = input;
                             string first_letter = player.name[0].ToString();
                             player.name = player.name.Remove(0, 1);
                             player.name = player.name.ToLower();
@@ -198,12 +220,19 @@ namespace assignment1
 
             if (change_state == STATE.Dialogue)
             {
-                for (int i = 0; i < text.option_names.Count; i++)
+                if (!skip)
                 {
-                    Console.WriteLine((i + 1).ToString() + ".  " + text.option_names[i]);
+                    for (int i = 0; i < text.option_names.Count; i++)
+                    {
+                        Console.WriteLine((i + 1).ToString() + ".  " + text.option_names[i]);
+                    }
+
+                    text_id = text.option_ids[verify_int_input(text.option_names.Count())];
                 }
-                
-                text_id = text.option_ids[verify_int_input(text.option_names.Count())];
+                else 
+                {
+                    text_id = next_id;
+                }
             }
             else
             {
@@ -231,7 +260,9 @@ namespace assignment1
                 }
                 Console.Write(enemies[i].name);
             }
-            Console.Write('\n');
+            Console.Write("!\n");
+
+            Thread.Sleep(800);
 
             state = STATE.Enemy_Attack;
         }
@@ -457,6 +488,11 @@ namespace assignment1
                     state = STATE.Enemy_Attack;
                 }
             }
+        }
+
+        private void explore() 
+        {
+            map.draw();
         }
     }
 }
