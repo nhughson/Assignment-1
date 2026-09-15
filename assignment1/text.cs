@@ -12,7 +12,7 @@ namespace assignment1
         public List<string> option_names = [];
         public List<string> text_queue = [];
         public List<int> pauses = [];
-        public void add(string txt, int pause = 50)
+        public void add(string txt, int pause = 40)
         {
             text_queue.Add(txt);
             pauses.Add(pause);
@@ -25,7 +25,7 @@ namespace assignment1
             {
                 Console.Write(text_queue[i][draw_char]);
                 sleep_time = pauses[i];
-                if (text_queue[i][draw_char] == '.' || text_queue[i][draw_char] == '!' || text_queue[i][draw_char] == '?' || text_queue[i][draw_char] == ',') 
+                if (text_queue[i][draw_char] == '.' || text_queue[i][draw_char] == '!' || text_queue[i][draw_char] == '?' || text_queue[i][draw_char] == ',' || text_queue[i][draw_char] == ':' || text_queue[i][draw_char] == ';')
                 {
                     sleep_time *= 3;
                 }
@@ -34,11 +34,11 @@ namespace assignment1
             Console.Write("\n");
             if (!input)
             {
-                Thread.Sleep(text_queue[i].Length * pauses[i] / 2);
+                Thread.Sleep(pauses[i] * 3);
                 if (!(option_ids.Count() != 0 && i == text_queue.Count()-1))
                 {
                     Console.Write("Press Enter to continue:   ");
-                    Console.Read();
+                    Console.ReadLine();
                 }
             }
         }

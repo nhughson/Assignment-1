@@ -4,7 +4,18 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace assignment1
 {
-    internal class Program
+    class ConsoleColorsClass
+    {
+        enum Colors
+        {
+            Red,
+            Orange,
+            Green,
+            Blue,
+            Black
+        };
+    }
+        internal class Program
     {
 
         public enum STATE
@@ -15,7 +26,6 @@ namespace assignment1
             Enemy_Attack,
             Player_Choose_Combat,
             Player_Choose_Defend,
-            Explore
         }
         static void Main(string[] args)
         {

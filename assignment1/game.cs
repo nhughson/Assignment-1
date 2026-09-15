@@ -10,6 +10,10 @@ namespace assignment1
 {
     public class Game
     {
+        NPC ent = new NPC("??? Tree Person ???");
+
+
+
         string text_id = "start";
         string checkpoint_id = "start";
         string next_id = "start";
@@ -31,12 +35,9 @@ namespace assignment1
         Text text = new Text();
         Random rnd = new Random();
 
-        Map map = new Map();
-
         public void setup() 
         {
             player.update_items();
-            map.setup();
         }
         public void tick() 
         {
@@ -61,9 +62,6 @@ namespace assignment1
                 case STATE.Player_Choose_Combat:
                     player_attack();
                     break;
-                case STATE.Explore:
-                    explore();
-                    break;
             }
         }
 
@@ -71,25 +69,27 @@ namespace assignment1
         {
             bool input_valid = false;
             int option = -1;
+            string input = "";
             while (!input_valid)
             {
                 option = -1;
-                string input = Console.ReadLine();
+                input = Console.ReadLine();
                 try
                 {
                     option = Int32.Parse(input) - 1;
+
+                    if (option >= max || option < 0)
+                    {
+                        Console.WriteLine("Please input a valid number.");
+                    }
+                    else
+                    {
+                        input_valid = true;
+                    }
                 }
                 catch
                 {
-                }
-
-                if (option >= max || option < 0)
-                {
                     Console.WriteLine("Please input a valid number.");
-                }
-                else
-                {
-                    input_valid = true;
                 }
             }
             return option;
@@ -138,17 +138,23 @@ namespace assignment1
         private void run_dialogue() 
         {
             skip = false;
+            
             text.option_ids = [];
             text.option_names = [];
+            
             text.text_queue = [];
             text.pauses = [];
+
             int take_input_index = -1;
             string input_variable = "";
+
+            string check_stat_id = "";
+
             STATE change_state = STATE.Dialogue;
             switch (text_id)
             {
                 case "start":
-                    text.add("Hello.", 250);
+                    text.add("Hello.", 150);
                     text.add("What is your name?");
                     take_input_index = 1;
                     input_variable = "name";
@@ -158,7 +164,7 @@ namespace assignment1
                     break;
                 case "start part 2":
                     text.add(". . . sorry what was your name again?");
-                    text.option_ids = ["XDDCC", "name", "ena"];
+                    text.option_ids = ["XDDCC", "name", "ENA"];
                     text.option_names = ["XDDCC", player.name, "ENA"];
                     break;
                 case "name":
@@ -179,8 +185,65 @@ namespace assignment1
                 case "forget name":
                     text.add("I won't remember that.");
                     text.add("And neither will anyone else.");
-                    text.add("Goodbye, Kaneis."); // this is supposed to be greek for nobody anglocized, will have to revise based on pronunciation later.
-                    
+                    text.add("Goodbye, Kaneis.");
+                    text.add("You feel groggy.");
+                    text.add("You can feel grass under you.");
+                    text.add("It is blindingly bright.");
+                    text.add("Your eyes are slow to adjust.");
+                    text.add("But as they do, you can see a building. It is a church. Would you like to analyse the church?");
+                    text.option_ids = ["analyse the church", "approach the church"];
+                    text.option_names = ["Yes", "No"];
+                    break;
+                case "analyse the church":
+                    text.add("You must do a knowledge roll to analyse the church.");
+                    check_stat_id = "knowledge";
+                    skip = true;
+                    next_id = "analyse church results";
+                    break;
+                case "analyse church results":
+                    text.add($"You rolled {player.roll}.");
+                    if (player.roll > 3)
+                    {
+                        if (player.roll > 6)
+                        {
+                            if (player.roll > 9)
+                            {
+                                text.add("The church is run down. It appears to have residents, but residents of the non-human variety. You have a bad feeling about this church.");
+                            }
+                            else
+                            {
+                                text.add("The church is run down. It looks lived in. You can tell it isn't meant to be in use...");
+                            }
+                        }
+                        else
+                        {
+                            text.add("The church is run down. However, it looks lived in.");
+                        }
+                    }
+                    else 
+                    {
+                        text.add("You could not analyse the church.");
+                    }
+                    skip = true;
+                    next_id = "approach the church";
+                    break;
+                case "approach the church":
+                    text.add("You feel a strange compulsion.");
+                    text.add("You feel compelled to approach the church.");
+                    text.add("You are not in control of your body.");
+                    text.add("The church is surprisingly bright on the insides, light flowing and dancing through the broken windows.");
+                    text.add("There is a person at the altar.");
+                    text.add("You get closer, and realise it is not a person. It appears to be a tree, but the tree is watching you.");
+                    text.add($"{ent.name}: 'Hello, Kaneis! It is so good to see you again.'\nWould you like to ask the Tree-Person any questions?");
+                    text.option_ids = ["ent kaneis?", "ent name?", "ent church?"];
+                    text.option_names = ["Kaneis?", "Your name?", "The church?"];
+                    break;
+                case "ent kaneis?":
+                    text.add("Player: ''");
+                    break;
+                case "ent name?":
+                    break;
+                case "ent church?":
                     break;
             }
 
@@ -192,7 +255,6 @@ namespace assignment1
                     switch (input_variable)
                     {
                         case "name":
-                            Console.ReadLine();
                             bool input_valid = false;
                             string input = "";
                             while (!input_valid) 
@@ -215,6 +277,30 @@ namespace assignment1
                             player.name = first_letter + player.name;
                             break;
                     }
+                }
+            }
+            if (check_stat_id != "")
+            {
+                switch (check_stat_id)
+                {
+                    case "str":
+                        player.roll = player.check_str(rnd);
+                        break;
+                    case "spd":
+                        player.roll = player.check_spd(rnd);
+                        break;
+                    case "def":
+                        player.roll = player.check_def(rnd);
+                        break;
+                    case "knowledge":
+                        player.roll = player.check_knowledge(rnd);
+                        break;
+                    case "sanity":
+                        player.roll = player.check_sanity(rnd);
+                        break;
+                    case "charisma":
+                        player.roll = player.check_charisma(rnd);
+                        break;
                 }
             }
 
@@ -290,7 +376,7 @@ namespace assignment1
                 }
             }
             */
-            dmg = rnd.Next(0, enemies[enemy_index].str * 2 + 1);
+            dmg = enemies[enemy_index].check_str(rnd);
             Console.WriteLine($"You have been attacked by {enemies[enemy_index].name} using Might. They rolled {dmg}.");
             Thread.Sleep(800);
         }
@@ -327,14 +413,13 @@ namespace assignment1
 
             if (option == 0)
             {
-                defending_with = player.get_str();
+                defending_with = player.check_str(rnd);
             }
             else
             {
-                defending_with = player.get_def();
+                defending_with = player.check_def(rnd);
             }
 
-            defending_with = rnd.Next(0, defending_with * 2 + 1);
 
             Console.WriteLine($"You rolled {defending_with}.");
             Thread.Sleep(300);
@@ -439,9 +524,9 @@ namespace assignment1
                 option = verify_int_input(enemies.Count());
 
                
-                int defending_with = rnd.Next(0, player.get_str() * 2 + 1);
+                int defending_with = player.check_str(rnd);
                 Console.WriteLine($"You rolled {defending_with}.");
-                dmg = rnd.Next(0, enemies[option].def * 2 + 1);
+                dmg = enemies[option].check_def(rnd);
                 Console.WriteLine($"The enemy rolled {dmg}.");
 
                 defending_with -= dmg;
@@ -475,7 +560,7 @@ namespace assignment1
             }
             else
             {
-                int attempt = rnd.Next(0, player.get_spd() * 2 + 1);
+                int attempt = player.check_spd(rnd);
                 if (attempt > 8)
                 {
                     Console.WriteLine($"You succeeded with a roll of {attempt}.");
@@ -488,11 +573,6 @@ namespace assignment1
                     state = STATE.Enemy_Attack;
                 }
             }
-        }
-
-        private void explore() 
-        {
-            map.draw();
         }
     }
 }

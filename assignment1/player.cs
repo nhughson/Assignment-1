@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,6 +14,9 @@ namespace assignment1
         bool to_die = false;
 
         public List<Item> items = [new Item("Stick")];
+
+        public int x = 3;
+        public int y = 6;
 
         List<int> str_list = [1, 2, 4, 4, 5, 6, 6, 7, 8];
         List<int> spd_list = [1, 2, 4, 4, 5, 6, 6, 7, 8];
@@ -34,6 +38,8 @@ namespace assignment1
         int base_knowledge_index = 5;
         int base_charisma_index = 5;
         int base_sanity_index = 5;
+
+        public int roll = 0;
 
         public int get_str()
         {
@@ -137,6 +143,31 @@ namespace assignment1
             {
                 sanity_index = sanity_list.Count();
             }
+        }
+
+        public int check_str(Random rnd) 
+        {
+            return rnd.Next(0, get_str() * 2 + 1);
+        }
+        public int check_spd(Random rnd) 
+        {
+            return rnd.Next(0, get_spd() * 2 + 1);
+        }
+        public int check_def(Random rnd) 
+        {
+            return rnd.Next(0, get_def() * 2 + 1);
+        }
+        public int check_knowledge(Random rnd) 
+        {
+            return rnd.Next(0, get_knowledge() * 2 + 1);
+        }
+        public int check_charisma(Random rnd) 
+        {
+            return rnd.Next(0, get_charisma() * 2 + 1);
+        }
+        public int check_sanity(Random rnd) 
+        {
+            return rnd.Next(0, get_sanity() * 2 + 1);
         }
 
 
