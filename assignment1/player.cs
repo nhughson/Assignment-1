@@ -13,7 +13,9 @@ namespace assignment1
         public string name = "";
         bool to_die = false;
 
-        public List<Item> items = [new Item("Stick")];
+        public List<Item> items = [];
+
+        public List<Party_member> party = [];
 
         public int x = 3;
         public int y = 6;
@@ -25,19 +27,19 @@ namespace assignment1
         List<int> charisma_list = [1, 2, 4, 4, 5, 6, 6, 7, 8];
         List<int> sanity_list = [1, 2, 4, 4, 5, 6, 6, 7, 8];
 
-        int str_index = 5;
-        int spd_index = 5;
-        int def_index = 5;
-        int knowledge_index = 5;
-        int charisma_index = 5;
-        int sanity_index = 5;
+        int str_index = 4;
+        int spd_index = 4;
+        int def_index = 4;
+        int knowledge_index = 4;
+        int charisma_index = 4;
+        int sanity_index = 4;
 
-        int base_str_index = 5;
-        int base_spd_index = 5;
-        int base_def_index = 5;
-        int base_knowledge_index = 5;
-        int base_charisma_index = 5;
-        int base_sanity_index = 5;
+        int base_str_index = 4;
+        int base_spd_index = 4;
+        int base_def_index = 4;
+        int base_knowledge_index = 4;
+        int base_charisma_index = 4;
+        int base_sanity_index = 4;
 
         public int roll = 0;
 
@@ -145,40 +147,40 @@ namespace assignment1
             }
         }
 
-        public int check_str(Random rnd) 
+        public int check_str(Random rnd)
         {
             return rnd.Next(0, get_str() * 2 + 1);
         }
-        public int check_spd(Random rnd) 
+        public int check_spd(Random rnd)
         {
             return rnd.Next(0, get_spd() * 2 + 1);
         }
-        public int check_def(Random rnd) 
+        public int check_def(Random rnd)
         {
             return rnd.Next(0, get_def() * 2 + 1);
         }
-        public int check_knowledge(Random rnd) 
+        public int check_knowledge(Random rnd)
         {
             return rnd.Next(0, get_knowledge() * 2 + 1);
         }
-        public int check_charisma(Random rnd) 
+        public int check_charisma(Random rnd)
         {
             return rnd.Next(0, get_charisma() * 2 + 1);
         }
-        public int check_sanity(Random rnd) 
+        public int check_sanity(Random rnd)
         {
             return rnd.Next(0, get_sanity() * 2 + 1);
         }
 
 
-        public bool check_to_die() 
+        public bool check_to_die()
         {
             bool check = to_die;
             to_die = false;
             return check;
         }
 
-        public void stat_return() 
+        public void stat_return()
         {
             str_index = base_str_index;
             spd_index = base_spd_index;
@@ -188,12 +190,30 @@ namespace assignment1
             sanity_index = base_sanity_index;
         }
 
-        public void update_items() 
+        public void update_items()
         {
-            for (int i = 0; i <= items.Count()-1; i++) 
+            for (int i = 0; i <= items.Count() - 1; i++)
             {
                 items[i].setup();
             }
+        }
+
+        public bool inventory_check(string in_name)
+        {
+            for (int i = 0; i < items.Count(); i++)
+            {
+                if (items[i].name.Equals(in_name))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void inventory_add(Item item)
+        {
+            items.Add(item);
+            update_items();
         }
 
         /*public int hp = 30;

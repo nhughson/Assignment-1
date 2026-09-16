@@ -22,6 +22,30 @@ namespace assignment1
                 case "Stick":
                     bonus_str = 1;
                     break;
+                case "Bell":
+                    bonus_str = 3;
+                    bonus_spd = -1;
+                    bonus_sanity = -1;
+                    break;
+                case "Plank":
+                    bonus_str = 2;
+                    bonus_spd = -3;
+                    break;
+                case "Dagger":
+                    bonus_str = 2;
+                    break;
+                case "Minotaur Head":
+                    bonus_def = 2;
+                    bonus_sanity = 2;
+                    break;
+                case "Holy Grail":
+                    bonus_str = 3;
+                    bonus_spd = 3;
+                    bonus_def = 3;
+                    bonus_knowledge = 3;
+                    bonus_sanity = 3;
+                    bonus_charisma = 3;
+                    break;
             }
         }
     }

@@ -10,12 +10,12 @@ namespace assignment1
     {
 
         public string name = in_name;
-        public int str = 4;
-        public int def = 4;
-        public int spd = 4;
-        public int knowledge = 4;
-        public int charisma = 4;
-        public int sanity = 4;
+        int str = 4;
+        int def = 4;
+        int spd = 4;
+        int knowledge = 4;
+        int charisma = 4;
+        int sanity = 4;
         public void setup()
         {
             switch (name)
@@ -37,15 +37,15 @@ namespace assignment1
             {
                 if (str > def && str > spd)
                 {
-                    str--;
+                    str -= 2;
                 }
                 else if (def > str && def > spd)
                 {
-                    def--;
+                    def -= 2;
                 }
                 else 
                 {
-                    spd--;
+                    spd -= 2;
                 }
                 dmg--;
             }
