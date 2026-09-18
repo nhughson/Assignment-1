@@ -46,15 +46,6 @@ namespace assignment1
                     bonus_sanity = 3;
                     bonus_charisma = 3;
                     break;
-                case "Hammer":
-                    bonus_str = 1;
-                    break;
-                case "Shovel":
-                    bonus_def = 2;
-                    break;
-                case "Key":
-                    bonus_knowledge = 2;
-                    break;
             }
         }
     }

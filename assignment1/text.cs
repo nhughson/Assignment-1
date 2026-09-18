@@ -57,12 +57,9 @@ namespace assignment1
 
         public void add(string txt, int pause = 40)
         {
-            if (txt != "")
-            {
-                screens.Add(screens[screens.Count() - 1]);
-                text_queue.Add(txt);
-                pauses.Add(pause);
-            }
+            screens.Add(screens[screens.Count()-1]);
+            text_queue.Add(txt);
+            pauses.Add(pause);
         }
         public void write_text(int i, bool input)
         {

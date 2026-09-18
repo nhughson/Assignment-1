@@ -4,7 +4,6 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace assignment1
@@ -17,17 +16,6 @@ namespace assignment1
         public List<Item> items = [];
 
         public List<Party_member> party = [];
-
-
-        public List<bool> checks = [false, false, false, false, false, false,];
-
-        /* 0 - lvl 1 enter
-         * 1 - lvl 2 enter
-         * 2 - lvl 3 enter
-         * 3 - lvl 1 enter
-         * 4 - lvl 2 enter
-         * 5 - lvl 3 enter
-         */
 
         public int x = 3;
         public int y = 6;
@@ -226,36 +214,6 @@ namespace assignment1
         {
             items.Add(item);
             update_items();
-        }
-
-        public void check_to_add_item(Text text, string id,string succeed_message,string fail_message) 
-        {
-            if (!inventory_check(id))
-            {
-                text.add(succeed_message);
-                inventory_add(new Item(id));
-            }
-            else
-            {
-                text.add(fail_message);
-            }
-        }
-
-        public string companion_message(string dog_text, string cat_text, string rat_text, string crow_text) 
-        {
-            string pet_name = party[party.Count() - 1].name;
-            switch (party[party.Count() - 1].type)
-            {
-                case "Dog":
-                    return dog_text;
-                case "Cat":
-                    return cat_text;
-                case "Rat":
-                    return rat_text;
-                case "Crow":
-                    return crow_text;
-            }
-            return "";
         }
 
         /*public int hp = 30;
