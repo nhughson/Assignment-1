@@ -59,27 +59,63 @@ namespace assignment1
 
         public int check_str(Random rnd)
         {
-            return rnd.Next(0, str * 2 + 1);
+            int amt = 0;
+            int max = str;
+            for (int i = 0; i < max; i++)
+            {
+                amt += rnd.Next(0, 3);
+            }
+            return amt;
         }
         public int check_spd(Random rnd)
         {
-            return rnd.Next(0, spd * 2 + 1);
+            int amt = 0;
+            int max = spd;
+            for (int i = 0; i < max; i++)
+            {
+                amt += rnd.Next(0, 3);
+            }
+            return amt;
         }
         public int check_def(Random rnd)
         {
-            return rnd.Next(0, def * 2 + 1);
+            int amt = 0;
+            int max = def;
+            for (int i = 0; i < max; i++)
+            {
+                amt += rnd.Next(0, 3);
+            }
+            return amt;
         }
         public int check_knowledge(Random rnd)
         {
-            return rnd.Next(0, knowledge * 2 + 1);
+            int amt = 0;
+            int max = knowledge;
+            for (int i = 0; i < max; i++)
+            {
+                amt += rnd.Next(0, 3);
+            }
+            return amt;
         }
         public int check_charisma(Random rnd)
         {
-            return rnd.Next(0, charisma * 2 + 1);
+            int amt = 0;
+            int max = charisma;
+            for (int i = 0; i < max; i++)
+            {
+                amt += rnd.Next(0, 3);
+            }
+            return amt;
         }
         public int check_sanity(Random rnd)
         {
-            return rnd.Next(0, sanity * 2 + 1);
+            int amt = 0;
+            int max = sanity;
+            for (int i = 0; i < max; i++)
+            {
+                amt += rnd.Next(0, 3);
+            }
+            return amt;
         }
     }
 }

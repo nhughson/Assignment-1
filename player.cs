@@ -11,6 +11,37 @@ namespace assignment1
 {
     public class Player
     {
+        public int verify_int_input(int max, int min = 0)
+        {
+            bool input_valid = false;
+            int option = -1;
+            string input = "";
+            while (!input_valid)
+            {
+                option = -1;
+                input = Console.ReadLine();
+                try
+                {
+                    option = Int32.Parse(input) - 1;
+
+                    if (option >= max || option < 0)
+                    {
+                        Console.WriteLine("Please input a valid number.");
+                    }
+                    else
+                    {
+                        input_valid = true;
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("Please input a valid number.");
+                }
+            }
+            return option;
+        }
+
+
         public string name = "";
         bool to_die = false;
 
@@ -19,7 +50,9 @@ namespace assignment1
         public List<Party_member> party = [];
 
 
-        public List<bool> checks = [false, false, false, false, false, false,];
+        public List<bool> checks = [false, false, false, false, false, false, false, false, false];
+
+        string checkpoint_id = "start";
 
         /* 0 - lvl 1 enter
          * 1 - lvl 2 enter
@@ -27,6 +60,9 @@ namespace assignment1
          * 3 - lvl 1 enter
          * 4 - lvl 2 enter
          * 5 - lvl 3 enter
+         * 6 - rolls explained
+         * 7 - lvl 3 - maze - physical trait
+         * 8 - lvl 3 - maze - mental trait
          */
 
         public int x = 3;
@@ -159,29 +195,199 @@ namespace assignment1
             }
         }
 
+        public bool take_physical_dmg(int amt, Text text) 
+        {
+            while (amt > 0)
+            {
+
+                Console.WriteLine($"What would you like to take damage in?\n1. Might ({get_str()})\n2. Speed ({get_spd()})\n3. Defense ({get_def()})");
+
+                int option = verify_int_input(3);
+
+                Console.WriteLine("How much damage would you like to take?");
+
+                int option_2 = verify_int_input(amt);
+
+                amt -= option_2;
+                if (option == 0)
+                {
+                    change_str(-option_2);
+                }
+                else if (option == 1)
+                {
+                    change_spd(-option_2);
+                }
+                else if (option == 2)
+                {
+                    change_def(-option_2);
+                }
+            }
+
+            if (check_to_die())
+            {
+                Console.WriteLine("You have died. Returning to checkpoint.");
+                Thread.Sleep(300);
+                text.text_id = checkpoint_id;
+                stat_reset();
+                return true;
+            }
+            return false;
+        }
+        public bool take_mental_dmg(int amt, Text text) 
+        {
+            while (amt > 0)
+            {
+
+                Console.WriteLine($"What would you like to take damage in?\n1. Knowledge ({get_knowledge()})\n2. Charisma ({get_charisma()})\n3. Sanity ({get_sanity()})");
+
+                int option = verify_int_input(3);
+
+                Console.WriteLine("How much damage would you like to take?");
+
+                int option_2 = verify_int_input(amt);
+
+                amt -= option_2;
+                if (option == 0)
+                {
+                    change_knowledge(-option_2);
+                }
+                else if (option == 1)
+                {
+                    change_charisma(-option_2);
+                }
+                else if (option == 2)
+                {
+                    change_sanity(-option_2);
+                }
+            }
+
+            if (check_to_die())
+            {
+                Console.WriteLine("You have died. Returning to checkpoint.");
+                Thread.Sleep(300);
+                text.text_id = checkpoint_id;
+                stat_reset();
+                return true;
+            }
+            return false;
+        }
+        public void gain_physical_trait(int amt) 
+        {
+            while (amt > 0)
+            {
+
+                Console.WriteLine($"What would you like to take damage in?\n1. Might ({get_str()})\n2. Speed ({get_spd()})\n3. Defense ({get_def()})");
+
+                int option = verify_int_input(3);
+
+                Console.WriteLine("How much damage would you like to take?");
+
+                int option_2 = verify_int_input(amt);
+
+                amt -= option_2;
+                if (option == 0)
+                {
+                    change_str(option_2);
+                }
+                else if (option == 1)
+                {
+                    change_spd(option_2);
+                }
+                else if (option == 2)
+                {
+                    change_def(option_2);
+                }
+            }
+        }
+        public void gain_mental_trait(int amt) 
+        {
+            while (amt > 0)
+            {
+
+                Console.WriteLine($"What would you like to take damage in?\n1. Knowledge ({get_knowledge()})\n2. Charisma ({get_charisma()})\n3. Sanity ({get_sanity()})");
+
+                int option = verify_int_input(3);
+
+                Console.WriteLine("How much damage would you like to take?");
+
+                int option_2 = verify_int_input(amt);
+
+                amt -= option_2+1;
+                if (option == 0)
+                {
+                    change_knowledge(option_2);
+                }
+                else if (option == 1)
+                {
+                    change_charisma(option_2);
+                }
+                else if (option == 2)
+                {
+                    change_sanity(option_2);
+                }
+            }
+
+        }
+
         public int check_str(Random rnd)
         {
-            return rnd.Next(0, get_str() * 2 + 1);
+            int amt = 0;
+            int max = get_str();
+            for (int i = 0; i < max; i++) 
+            {
+                amt += rnd.Next(0, 3);
+            }
+            return amt;
         }
         public int check_spd(Random rnd)
         {
-            return rnd.Next(0, get_spd() * 2 + 1);
+            int amt = 0;
+            int max = get_spd();
+            for (int i = 0; i < max; i++)
+            {
+                amt += rnd.Next(0, 3);
+            }
+            return amt;
         }
         public int check_def(Random rnd)
         {
-            return rnd.Next(0, get_def() * 2 + 1);
+            int amt = 0;
+            int max = get_def();
+            for (int i = 0; i < max; i++)
+            {
+                amt += rnd.Next(0, 3);
+            }
+            return amt;
         }
         public int check_knowledge(Random rnd)
         {
-            return rnd.Next(0, get_knowledge() * 2 + 1);
+            int amt = 0;
+            int max = get_knowledge();
+            for (int i = 0; i < max; i++)
+            {
+                amt += rnd.Next(0, 3);
+            }
+            return amt;
         }
         public int check_charisma(Random rnd)
         {
-            return rnd.Next(0, get_charisma() * 2 + 1);
+            int amt = 0;
+            int max = get_charisma();
+            for (int i = 0; i < max; i++)
+            {
+                amt += rnd.Next(0, 3);
+            }
+            return amt;
         }
         public int check_sanity(Random rnd)
         {
-            return rnd.Next(0, get_sanity() * 2 + 1);
+            int amt = 0;
+            int max = get_sanity();
+            for (int i = 0; i < max; i++)
+            {
+                amt += rnd.Next(0, 3);
+            }
+            return amt;
         }
 
 
@@ -192,7 +398,7 @@ namespace assignment1
             return check;
         }
 
-        public void stat_return()
+        public void stat_reset()
         {
             str_index = base_str_index;
             spd_index = base_spd_index;
@@ -228,17 +434,14 @@ namespace assignment1
             update_items();
         }
 
-        public void check_to_add_item(Text text, string id,string succeed_message,string fail_message) 
+        public string check_to_add_item(string id,string succeed_message,string fail_message) 
         {
             if (!inventory_check(id))
             {
-                text.add(succeed_message);
                 inventory_add(new Item(id));
+                return succeed_message;
             }
-            else
-            {
-                text.add(fail_message);
-            }
+            return fail_message;
         }
 
         public string companion_message(string dog_text, string cat_text, string rat_text, string crow_text) 

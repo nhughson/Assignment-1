@@ -55,6 +55,14 @@ namespace assignment1
                 case "Key":
                     bonus_knowledge = 2;
                     break;
+                case "Hatchet":
+                    bonus_str = 2;
+                    bonus_def = 2;
+                    bonus_spd = 1;
+                    break;
+                case "Rope":
+                    bonus_def = 2;
+                    break;
             }
         }
     }

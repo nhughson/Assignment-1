@@ -14,8 +14,6 @@ namespace assignment1
         NPC ent = new NPC("??? Tree Person ???");
 
 
-        string checkpoint_id = "start";
-
         bool skip = false;
         Player player = new Player();
 
@@ -64,7 +62,7 @@ namespace assignment1
             }
         }
 
-        private int verify_int_input(int max, int min = 0)
+        public int verify_int_input(int max, int min = 0)
         {
             bool input_valid = false;
             int option = -1;
@@ -94,43 +92,13 @@ namespace assignment1
             return option;
         }
 
-        private void player_take_damage(int dmg)
+        private void player_take_damage(Player player, int dmg)
         {
             Console.WriteLine($"You lose. You take {dmg} damage. Choose where to take damage.");
             Thread.Sleep(300);
-            while (dmg > 0)
+            if (player.take_physical_dmg(dmg,text))
             {
-
-                Console.WriteLine($"What would you like to take damage in?\n1. Might ({player.get_str()})\n2. Speed ({player.get_spd()})\n3. Defense ({player.get_def()})");
-
-                int option = verify_int_input(3);
-
-                Console.WriteLine("How much damage would you like to take?");
-
-                int option_2 = verify_int_input(-dmg);
-
-                dmg -= option_2;
-                if (option == 0)
-                {
-                    player.change_str(-option_2);
-                }
-                else if (option == 1)
-                {
-                    player.change_spd(-option_2);
-                }
-                else if (option == 2)
-                {
-                    player.change_def(-option_2);
-                }
-            }
-
-            if (player.check_to_die())
-            {
-                Console.WriteLine("You have died. Returning to checkpoint.");
-                Thread.Sleep(300);
                 state = STATE.Dialogue;
-                text.text_id = checkpoint_id;
-                player.stat_return();
             }
         }
 
@@ -255,8 +223,8 @@ namespace assignment1
                     text.add("There is a person at the altar.");
                     text.add("You get closer, and realise it is not a person. It appears to be a tree, but the tree is watching you.");
                     text.add($"{ent.name}: 'Hello, Kaneis! It is so good to see you again.'\nWould you like to ask the Tree-Person any questions?");
-                    text.option_ids = ["ent kaneis?", "ent name?", "ent church?"];
-                    text.option_names = ["Kaneis?", "Your name?", "The church?"];
+                    text.option_ids = ["ent kaneis?", "ent name?", "ent church?", "done with ent"];
+                    text.option_names = ["Kaneis?", "Your name?", "The church?", "No"];
                     break;
                 case "ent kaneis?":
                     text.add($"{ent.name}: 'Kaneis? Kaneis is you! Who else would I be talking to? You are the only Kaneis here.'");
@@ -487,16 +455,16 @@ namespace assignment1
                         {
                             if (player.roll > 16)
                             {
-                                player.check_to_add_item(text, "Holy Grail", "You found the Holy Grail.", "There was nothing in the pews.");
+                                text.add(player.check_to_add_item("Holy Grail", "You found the Holy Grail.", "There was nothing in the pews."));
                             }
                             else
                             {
-                                player.check_to_add_item(text, "Dagger", "You found a Dagger.", "There was nothing in the pews.");
+                                text.add(player.check_to_add_item("Dagger", "You found a Dagger.", "There was nothing in the pews."));
                             }
                         }
                         else
                         {
-                            player.check_to_add_item(text, "Plank", "You found a Plank.", "There was nothing in the pews.");
+                            text.add(player.check_to_add_item("Plank", "You found a Plank.", "There was nothing in the pews."));
                         }
                     }
                     else
@@ -537,7 +505,7 @@ namespace assignment1
                     text.add($"You rolled {player.roll}.");
                     if (player.roll > 8)
                     {
-                        player.check_to_add_item(text, "Minotaur Head", "You found a Minotaur Head.", "There was nothing in the maze.");
+                        text.add(player.check_to_add_item("Minotaur Head", "You found a Minotaur Head.", "There was nothing in the maze."));
                     }
                     else
                     {
@@ -567,7 +535,7 @@ namespace assignment1
 
                 case "lvl 1 start":
                     pet_name = player.party[player.party.Count() - 1].name;
-                    player.check_to_add_item(text, "Shovel", $"You find a shovel behind the gravestone that {pet_name} is sitting on.", "You remember about your shovel.");
+                    text.add(player.check_to_add_item("Shovel", $"You find a shovel behind the gravestone that {pet_name} is sitting on.", "You remember about your shovel."));
                     
                     text.add("You plunge the shovel into the dirt. Dark, black fog spews from the crack in the earth.");
 
@@ -620,6 +588,7 @@ namespace assignment1
 
                     break;
                 case "lvl 1 - pre-explore":
+                    pet_name = player.party[player.party.Count() - 1].name;
                     text.add($"You rolled {player.roll}.");
                     if (player.roll > 3)
                     {
@@ -627,28 +596,125 @@ namespace assignment1
                         {
                             text.add("You can see a tall, slender, skeleton like creature standing over a lamp post. You cannot see its face, but the rest of it is bathed in a faint blue glow.");
                             text.add("It breaks the lamp.");
-                            text.add("You are unaffected.");
+                            text.add("You feel a weird sense of relief.");
+                            text.add("You gain 1 point to put into any mental trait.");
+                            player.gain_mental_trait(1);
+                            text.add(player.companion_message($"{pet_name}: 'Well done! That was a good spot, Kaneis.'",
+                                $"{pet_name}: 'Do you expect me to congratulate you?'",
+                                $"{pet_name}: 'Nice one.'",
+                                $"{pet_name}: 'Very smart.'"));
                         }
                         else
                         {
                             text.add("You can see a lamp post. It is producing a faint blue glow.");
                             text.add("The light is gone.");
-                            //text.add("You take 1 point of mental damage.");         <--------- implement later
+                            text.add("You take no damage.");
+                            text.add(player.companion_message($"{pet_name} watches from your side.",
+                                $"{pet_name} seems unaffected aswell.",
+                                $"{pet_name}: 'Spooky...'",
+                                $"{pet_name}: 'That was by no means intimidating.'"));
                         }
                     }
                     else
                     {
                         text.add("You could not see well, but the light suddenly goes out.");
+                        text.add("You take 1 point of mental damage.");
+                        player.take_mental_dmg(1,text);
+                        text.add(player.companion_message($"{pet_name} cowers.",
+                                $"{pet_name} just looks out into the darkness.",
+                                $"{pet_name} scurries back to hide behind you.",
+                                $"{pet_name}: 'That was... marginally intimidating.'"));
                     }
 
+                    if (!player.checks[6])
+                    {
+                        player.checks[6] = true;
+                        text.add($"{pet_name}: 'When you do a good roll, often you get rewarded. However, a bad roll often gets punished'");
+                    }
+                    
 
-
-                    // --------------------------------------------------- update here
-                    text.add("This area is incomplete.  1");
-                    change_state = STATE.End_Game;
+                    text.add(player.companion_message($"{pet_name}: 'Come on, let's go!'",
+                                $"{pet_name}: 'Come on, you pathetic sloth.'",
+                                $"{pet_name}: 'We should probably get going, Kaneis.'",
+                                $"{pet_name}: 'Let's venture on.'"));
+                    text.add("Suddenly, rows of streetlamps light up, lining a path infront of you.");
+                    text.add("The path leads up to a large, imposing manor.");
+                    text.add("There are black thorn bushes on either side of the path, but you can hear sounds vaguely like wailing just beyond them.");
+                    skip = true;
+                    text.next_id = "lvl 1 - path";
                     break;
+                case "lvl 1 - path":
+                    text.add("Would you like to explore here or move on?");
 
+                    check_stat_id = "str";
 
+                    text.option_ids = ["lvl 1 - path - explore", "lvl 1 - house entrance"];
+                    text.option_names = ["Explore", "Move on"];
+                    break;
+                case "lvl 1 - path - explore":
+                    text.add(player.check_to_add_item("Key", "You find a key hidden in the brambles.", ""));
+                    text.add("To explore through the brambles, you must make a might roll.");
+                    text.add($"You rolled {player.roll}.");
+                    skip = true;
+                    text.next_id = "lvl 1 - path";
+                    if (player.roll > 3)
+                    {
+                        if (player.roll > 5)
+                        {
+                            if (player.roll > 7)
+                            {
+                                //  ----------------------------------------------------------------------------------------------------------- decide what goes here later
+                            }
+                            else 
+                            {
+                                text.add(player.check_to_add_item("Hatchet", "You found a Hatchet in the brambles.", "There was nothing in the brambles."));
+                            }
+                        }
+                        else
+                        {
+                            text.add(player.check_to_add_item("Rope", "You found a Rope in the brambles.", "There was nothing in the brambles."));
+                        }
+                    }
+                    break;
+                case "lvl 1 - house entrance":
+                    text.add("You walk up to the entrance of the house.");
+                    text.add("It is imposing and intimidating.");
+                    text.add("The manor looks decrepit, run down, vines climbing the walls and the windows caved in.");
+                    text.add("The closer you get to the door, the quieter the surroundings get, dropping into an eerie silence.");
+                    text.option_ids = ["lvl 1 - knock on door 1", "lvl 1 - open door"];
+                    text.option_names = ["Knock on the door", "Open the door without knocking"];
+                    break;
+                case "lvl 1 - knock on the door 1":
+                    text.add("You knock on the door, breaking the deathly silence.");
+                    text.add("There is no response.");
+                    text.option_ids = ["lvl 1 - knock on door 2", "lvl 1 - open door"];
+                    text.option_names = ["Knock again", "Open the door without knocking"];
+                    break;
+                case "lvl 1 - knock on the door 2":
+                    text.add("You knock on the door again, increasing your volume a little this time.");
+                    text.add("Yet again, there is no response.");
+                    text.option_ids = ["lvl 1 - knock on door 3", "lvl 1 - open door"];
+                    text.option_names = ["Knock for a third time", "Open the door without knocking"];
+                    break;
+                case "lvl 1 - knock on the door 3":
+                    text.add("You raise your fist to knock on the door, but this time the door swings open by itself before your fist reaches the wood.");
+                    text.add("The air in the building is incredibly stagnant.");
+                    skip = true;
+                    text.next_id = "lvl 1 - enter house";
+                    break;
+                case "lvl 1 - open door":
+                    pet_name = player.party[player.party.Count() - 1].name;
+                    text.add("You swing the door open, caught by wind erupting from the house. You are nearly knocked down, but quickly, the wind subsides.");
+                    text.add(player.companion_message($"{pet_name}: 'Knocking is meant to be polite... they seem upset. Maybe try that next time?'",
+                        $"{pet_name}: 'Pathetic. Should've been more polite.'",
+                        $"{pet_name}: 'Maybe try knocking next time?'",
+                        $"{pet_name}: 'They expect you to be polite.'"));
+                    skip = true;
+                    text.next_id = "lvl 1 - enter house";
+                    break;
+                case "lvl 1 - enter house":
+                    // ----------------------------------------------------------------------------------------------------------------- update here
+                    break;
 
 
                 // ------ LVL 2 ------ //
@@ -658,7 +724,7 @@ namespace assignment1
                     pet_name = player.party[player.party.Count() - 1].name;
                     pet_type = player.party[player.party.Count() - 1].type;
                     text.add("You approach the trapdoor, which is covered in moss and vines.");
-                    player.check_to_add_item(text, "Key", "You find a key hidden in the moss.", "You remember about your key.");
+                    text.add(player.check_to_add_item("Key", "You find a key hidden in the moss.", "You remember about your key."));
 
 
                     text.add(player.companion_message($"{pet_name} barks excitedly.",
@@ -685,24 +751,26 @@ namespace assignment1
                 case "lvl 2 - question companion":
                     pet_name = player.party[player.party.Count() - 1].name;
                     ent.name = "Oakley";
+
                     text.add(player.companion_message($"{pet_name}: 'Well, yeah! Its because we aren't in {ent.name}'s domain anymore.'",
                         $"{pet_name}: 'Have you never met a talking cat before?'",
                         $"{pet_name}: 'Oh yes, I can speak. That's because I'm not being restricted by {ent.name}.'",
                         $"{pet_name}: 'Yes, I can speak. But only here, since we are far enough away from {ent.name}.'"));
+
                     text.add(player.companion_message("",
                         $"{pet_name}: 'Of course I talk. We aren't following {ent.name}'s rules anymore.'",
                         "",
                         ""));
+
                     skip = true;
                     text.next_id = "lvl 2 - get moving";
                     break;
                 case "lvl 2 - get moving":
                     text.add("You stand up.");
+                    text.add("There is a large, white Big Top tent illuminated in the dark ahead of you.");
+                    text.add("There are a few, small stars scattered across the sky, pinpoints of light beaming down onto you, their reflections glimmering on the floor beneath your feet.");
 
-                    // --------------------------------------------------- update here
-                    text.add("This area is incomplete.   2");
-                    change_state = STATE.End_Game;
-
+                    // ------------------------------------------------------------------------------------------------------------------------ update here
                     break;
 
 
@@ -714,28 +782,15 @@ namespace assignment1
                     text.add("You look around the wall.");
                     text.add("At first, you don't see anything peculiar with it.");
                     text.add("But then you see the crack in the stone bricks, with a dark fog seeping out.");
-                    player.check_to_add_item(text, "Hammer", "You find a hammer sitting on the ground nearby.", "You remember about your hammer.");
+                    text.add(player.check_to_add_item("Hammer", "You find a hammer sitting on the ground nearby.", "You remember about your hammer."));
                     text.add("You raise your hammer over your head and bring it down against the wall.");
                     text.add("Some debris falls loose.");
+
                     text.add(player.companion_message($"{pet_name} barks excitedly.",
                         $"{pet_name} just sits and watches.",
                         $"{pet_name} squeaks and runs in little circles by your feet.",
                         $"{pet_name} caws loudly, flapping its wings."));
-                    /*switch (pet_type)
-                    {
-                        case "Dog":
-                            text.add($"{pet_name} barks excitedly.");
-                            break;
-                        case "Cat":
-                            text.add($"{pet_name} just sits and watches.");
-                            break;
-                        case "Rat":
-                            text.add($"{pet_name} squeaks and runs in little circles by your feet.");
-                            break;
-                        case "Crow":
-                            text.add($"{pet_name} caws loudly, flapping its wings.");
-                            break;
-                    }*/
+
                     text.add("You bring your hammer back up to strike the wall, and this time it crumbles.");
                     text.add($"{pet_name} pushes you through the crack in the wall.");
                     text.add("It is dark.");
@@ -756,26 +811,96 @@ namespace assignment1
                     pet_name = player.party[player.party.Count() - 1].name;
                     pet_name = player.party[player.party.Count() - 1].name;
                     ent.name = "Oakley";
+
                     text.add(player.companion_message($"{pet_name}: 'Well, yeah! Its because we aren't in {ent.name}'s domain anymore.'",
                         $"{pet_name}: 'Have you never met a talking cat before?'",
                         $"{pet_name}: 'Oh yes, I can speak. That's because I'm not being restricted by {ent.name}.'",
                         $"{pet_name}: 'Yes, I can speak. But only here, since we are far enough away from {ent.name}.'"));
+
                     text.add(player.companion_message("",
                         $"{pet_name}: 'Of course I talk. We aren't following {ent.name}'s rules anymore.'",
                         "",
                         ""));
+
                     skip = true;
                     text.next_id = "lvl 3 - get moving";
                     break;
                 case "lvl 3 - get moving":
                     text.add("You stand up.");
-
-                    // --------------------------------------------------- update here
-                    text.add("This area is incomplete.    3");
-                    change_state = STATE.End_Game;
-
+                    text.add("You feel cramped.");
+                    text.add("There are solid stone walls that brush against your shoulders on either side of you.");
+                    text.add("The more you try to move onwards, the worse it feels.");
+                    skip = true;
+                    text.next_id = "lvl 3 - maze mouth";
                     break;
+                case "lvl 3 - maze mouth":
+                    text.add("Would you like to attempt a speed roll to proceed or would you like to backtrack and explore?");
+                    check_stat_id = "spd";
+                    text.option_ids = ["lvl 3 - into arena", "lvl 3 - into maze"];
+                    text.option_names = ["Proceed", "Backtrack"];
+                    break;
+                case "lvl 3 - into arena":
+                    pet_name = player.party[player.party.Count() - 1].name;
+                    text.add($"You rolled {player.roll}.");
+                    if (player.roll > 6)
+                    {
+                        // success
+                    }
+                    else 
+                    {
+                        text.add("You failed the roll.");
+                        skip = true;
+                        text.next_id = "lvl 3 - maze mouth";
+                    }
+                    if (!player.checks[6])
+                    {
+                        player.checks[6] = true;
+                        text.add($"{pet_name}: 'When you do a good roll, often you get rewarded. However, a bad roll often gets punished'");
+                    }
+                    break;
+                case "lvl 3 - into maze":
+                    text.add("To explore the maze, you must make a sanity roll.");
+                    check_stat_id = "sanity";
+                    skip = true;
+                    text.next_id = "lvl 3 - into maze 2";
+                    break;
+                case "lvl 3 - into maze 2":
+                    pet_name = player.party[player.party.Count() - 1].name;
+                    text.add($"You rolled {player.roll}.");
 
+                    if (player.roll > 3)
+                    {
+                        if (player.roll > 5 && !player.checks[8])
+                        {
+                            text.add("You gain 1 in a mental trait.");
+                            player.gain_mental_trait(1);
+                            player.checks[8] = true;
+                        }
+                        else if (!player.checks[7])
+                        {
+                            text.add("You gain 1 in a physical trait.");
+                            player.gain_physical_trait(1);
+                            player.checks[7] = true;
+                        }
+                        else
+                        {
+                            text.add("You didn't achieve anything in the maze.");
+                        }
+                    }
+                    else 
+                    {
+                        text.add("You didn't achieve anything in the maze.");
+                    }
+
+                    if (!player.checks[6])
+                    {
+                        player.checks[6] = true;
+                        text.add($"{pet_name}: 'When you do a good roll, often you get rewarded. However, a bad roll often gets punished'");
+                    }
+
+                    skip = true;
+                    text.next_id = "lvl 3 - maze mouth";
+                    break;
 
             }
 
@@ -1080,7 +1205,7 @@ namespace assignment1
             }
             else if (defending_with < 0)
             {
-                player_take_damage(-defending_with);
+                player_take_damage(player, -defending_with);
             }
 
             if (state == STATE.Player_Choose_Defend)
@@ -1167,7 +1292,7 @@ namespace assignment1
                 }
                 else if (defending_with < 0)
                 {
-                    player_take_damage(-defending_with);
+                    player_take_damage(player,-defending_with);
                 }
 
             }
