@@ -52,7 +52,7 @@ namespace assignment1
 
         public List<bool> checks = [false, false, false, false, false, false, false, false, false];
 
-        string checkpoint_id = "start";
+        string checkpoint_id;
 
         /* 0 - lvl 1 enter
          * 1 - lvl 2 enter
@@ -208,7 +208,7 @@ namespace assignment1
 
                 int option_2 = verify_int_input(amt);
 
-                amt -= option_2;
+                amt -= option_2+1;
                 if (option == 0)
                 {
                     change_str(-option_2);
@@ -246,7 +246,7 @@ namespace assignment1
 
                 int option_2 = verify_int_input(amt);
 
-                amt -= option_2;
+                amt -= option_2+1;
                 if (option == 0)
                 {
                     change_knowledge(-option_2);
@@ -276,15 +276,15 @@ namespace assignment1
             while (amt > 0)
             {
 
-                Console.WriteLine($"What would you like to take damage in?\n1. Might ({get_str()})\n2. Speed ({get_spd()})\n3. Defense ({get_def()})");
+                Console.WriteLine($"Where would you like to spend your point(s)?\n1. Might ({get_str()})\n2. Speed ({get_spd()})\n3. Defense ({get_def()})");
 
                 int option = verify_int_input(3);
 
-                Console.WriteLine("How much damage would you like to take?");
+                Console.WriteLine("How many points would you like to spend?");
 
                 int option_2 = verify_int_input(amt);
 
-                amt -= option_2;
+                amt -= option_2+1;
                 if (option == 0)
                 {
                     change_str(option_2);
@@ -304,11 +304,11 @@ namespace assignment1
             while (amt > 0)
             {
 
-                Console.WriteLine($"What would you like to take damage in?\n1. Knowledge ({get_knowledge()})\n2. Charisma ({get_charisma()})\n3. Sanity ({get_sanity()})");
+                Console.WriteLine($"Where would you like to spend your point(s)?\n1. Knowledge ({get_knowledge()})\n2. Charisma ({get_charisma()})\n3. Sanity ({get_sanity()})");
 
                 int option = verify_int_input(3);
 
-                Console.WriteLine("How much damage would you like to take?");
+                Console.WriteLine("How many points would you like to spend?");
 
                 int option_2 = verify_int_input(amt);
 
@@ -459,6 +459,15 @@ namespace assignment1
                     return crow_text;
             }
             return "";
+        }
+
+        public void set_checkpoint(Text text)
+        {
+            checkpoint_id = text.text_id;
+        }
+        public void set_checkpoint(string id)
+        {
+            checkpoint_id = id;
         }
 
         /*public int hp = 30;

@@ -64,11 +64,18 @@ namespace assignment1
                 pauses.Add(pause);
             }
         }
-        public void write_text(int i, bool input)
+
+        public void write_screen(int i) 
         {
             Console.Clear();
-            int sleep_time = 0;
+            
             Console.Write(screens[i]);
+        }
+
+        public void write_text(int i, bool input)
+        {
+            int sleep_time = 0;
+            write_screen(i);
             int line_break = 0;
             for (int draw_char = 0; draw_char < text_queue[i].Length; draw_char++)
             {
