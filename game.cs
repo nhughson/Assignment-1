@@ -576,8 +576,8 @@ namespace assignment1
                     text.next_id = "lvl 1 - get moving";
                     break;
                 case "lvl 1 - get moving":
-                    pet_name = player.party[player.party.Count() - 1].name;
                     pet_type = player.party[player.party.Count() - 1].type;
+                    pet_name = player.party[player.party.Count() - 1].name;
                     text.add("You stand up.");
                     text.add("The ground is uneven, and moving under your feet.");
                     if (pet_type == "Dog") 
@@ -722,24 +722,34 @@ namespace assignment1
                         $"{pet_name}: 'Maybe try knocking next time?'",
                         $"{pet_name}: 'They expect you to be polite.'"));
                     skip = true;
-                    text.next_id = "lvl 1 - enter house";
+                    text.next_id = "lvl 1 - enter house - enemies";
                     break;
-                case "lvl 1 - enter house":
+                case "lvl 1 - enter house - enemies":
                     text.add("The interior is full of old, worn furniture, plants and moss growing in every corner of the building.");
                     text.add("You hear a groan. You are attacked!");
+                    enemies = [new Enemy("Entity","lvl 1 - entity 1"), new Enemy("Entity", "lvl 1 - entity 1"), new Enemy("Entity", "lvl 1 - entity 1"), new Enemy("Entity", "lvl 1 - entity 1"), new Enemy("Entity", "lvl 1 - entity 1")];
                     player.set_checkpoint(text);
                     change_state = STATE.Setup_Combat;
-
+                    break;
+                case "lvl 1 - enter house - defeat enemies":
+                    pet_name = player.party[player.party.Count() - 1].name;
+                    text.add(player.companion_message($"{pet_name}: 'Well done Kaneis! Did you notice that using defence instead of might halves the damage you take, but also the damage you deal?'",
+                        $"{pet_name}: 'I don't know if you realised, but using might instead of defence will the damage dealt.'",
+                        $"{pet_name}: 'Well done Kaneis! You can use defence to halve the damage!'",
+                        $"{pet_name}: 'Good job. You can use might instead of defence, which will double the damage dealt and taken.'"));
+                    skip = true;
+                    text.next_id = "lvl 1 - foyer";
+                    break;
+                case "lvl 1 - foyer":
+                    text.add("You are standing in the foyer. Where would you like to go?");
                     // ----------------------------------------------------------------------------------------------------------------- update here
                     break;
-
 
                 // ------ LVL 2 ------ //
 
 
                 case "lvl 2 start":
                     pet_name = player.party[player.party.Count() - 1].name;
-                    pet_type = player.party[player.party.Count() - 1].type;
                     text.add("You approach the trapdoor, which is covered in moss and vines.");
                     text.add(player.check_to_add_item("Key", "You find a key hidden in the moss.", "You remember about your key."));
 
@@ -784,10 +794,90 @@ namespace assignment1
                     break;
                 case "lvl 2 - get moving":
                     text.add("You stand up.");
+                    skip = true;
+                    text.next_id = "lvl 2 - explore start";
+                    break;
+                case "lvl 2 - explore start":
                     text.add("There is a large, white Big Top tent illuminated in the dark ahead of you.");
                     text.add("There are a few, small stars scattered across the sky, pinpoints of light beaming down onto you, their reflections glimmering on the floor beneath your feet.");
+                    text.add("What would you like to do?");
+                    check_stat_id = "knowledge";
+                    text.option_ids = ["lvl 2 - approach big top", "lvl 2 - explore around start"];
+                    text.option_names = ["Go to the Big Top tent", "Explore here"];
+                    break;
+                case "lvl 2 - approach big top":
+                    text.add("You approach the tent, and as you get closer you can hear a sound.");
+                    text.add("It's like a shrill warbling sound, getting more and more intense the closer you approach.");
+                    text.add("You must make a sanity check to approach.");
+                    check_stat_id = "sanity";
+                    text.option_ids = ["lvl 2 - approach big top 2", "lvl 2 - explore start"];
+                    text.option_names = ["Approach", "Do not"];
+                    break;
+                case "lvl 2 - approach big top 2":
+                    text.add($"You rolled {player.roll}.");
 
-                    // ------------------------------------------------------------------------------------------------------------------------ update here
+                    if (player.roll > 4)
+                    {
+                        text.add("You are able to approach.");
+                        skip = true;
+                        text.next_id = "lvl 2 - approach big top 3";
+                    }
+                    else 
+                    {
+                        text.add("You are unable to proceed.");
+                        skip = true;
+                        text.next_id = "lvl 2 - explore start";
+                    }
+                    break;
+                case "lvl 2 - explore around start":
+                    text.add("You make a knowledge roll.");
+                    text.add($"You rolled {player.roll}.");
+
+                    if (player.roll > 4 && !player.checks[9])
+                    {
+                        player.checks[9] = true;
+                        text.add("On closer inspection, you notice that there was a lot of interesting flora on the floor. You feel rejuvenated.");
+                        text.add("You gain 1 in a mental trait.");
+                        mental_change = 1;
+                    }
+                    else
+                    {
+                        text.add("Nothing happens.");
+                        skip = true;
+                        text.next_id = "lvl 2 - explore start";
+                    }
+                    break;
+                case "lvl 2 - approach big top 3":
+                    text.add("You endure the shrill wailing.");
+                    text.add("However, the wailing starts to dull down again now that you're getting closer to the tent.");
+                    text.add("You poke your head into the tent, and inside, you spot your target.");
+                    text.add("The leucistic peacock is on the stage, spotlights bouncing off the white feathers.");
+                    text.add("The seats are empty.");
+                    check_stat_id = "knowledge";
+                    skip = true;
+                    text.next_id = "lvl 2 - peacock dance";
+                    break;
+                case "lvl 2 - peacock dance":
+                    if (player.roll > 2)
+                    {
+                        if (player.roll > 4)
+                        {
+                            if (player.roll > 6)
+                            {
+                                text.add("The peacock appears to be performing ballet for no audience.");
+                            }
+                            else
+                            {
+                                text.add("The peacock appears to be dancing for no audience.");
+                            }
+                        }
+                        else
+                        {
+                            text.add("The peacock appears to be performing to no audience.");
+                        }
+                    }
+                    text.add("Suddenly, the peacock's head swivels towards you, staring daggers into your soul.");
+                    text.add("Then, the tent disapears, along with the peacock.");
                     break;
 
 
@@ -825,7 +915,6 @@ namespace assignment1
                     break;
 
                 case "lvl 3 - question companion":
-                    pet_name = player.party[player.party.Count() - 1].name;
                     pet_name = player.party[player.party.Count() - 1].name;
                     ent.name = "Oakley";
 
@@ -1113,42 +1202,41 @@ namespace assignment1
             text.write_screen(text.text_queue.Count);
 
             enemy_index = 0;
-            enemies = [new Enemy("Zombie"), new Enemy("Zombie")];
 
-            Console.Write("You have been attacked by");
+            text.write_raw("You have been attacked by",false);
 
             for (int i = 0; i < enemies.Count; i++)
             {
                 enemies[i].setup();
                 if (i < enemies.Count - 1)
                 {
-                    Console.Write(" a ");
+                    text.write_raw(" a ", false);
                 }
                 else
                 {
-                    Console.Write(" and a ");
+                    text.write_raw(" and a ", false);
                 }
-                Console.Write(enemies[i].name);
+                text.write_raw(enemies[i].name, false);
             }
-            Console.Write("!\n");
+            text.write_raw("!");
 
             Thread.Sleep(800);
             
 
             for (int i = 0; i < player.party.Count; i++)
             {
-                Console.Write(player.party[i].name);
+                text.write_raw(player.party[i].name, false);
                 if (i < player.party.Count - 2)
                 {
-                    Console.Write(", ");
+                    text.write_raw(", ", false);
                 }
                 else if (i == player.party.Count - 2)
                 {
-                    Console.Write(" and ");
+                    text.write_raw(" and ", false);
                 }
                 else 
                 {
-                    Console.Write(" ");
+                    text.write_raw(" ", false);
                 }
             }
             string write_s = "";
@@ -1156,7 +1244,7 @@ namespace assignment1
             {
                 write_s = "s";
             }
-            Console.Write($"stand{write_s} by your side!\n");
+            text.write_raw($"stand{write_s} by your side!");
 
             Thread.Sleep(800);
 
@@ -1191,7 +1279,7 @@ namespace assignment1
             }
             */
             dmg = enemies[enemy_index].check_str(rnd);
-            Console.WriteLine($"You have been attacked by {enemies[enemy_index].name} using Might. They rolled {dmg}.");
+            text.write_raw($"You have been attacked by {enemies[enemy_index].name} using Might. They rolled {dmg}.");
             Thread.Sleep(800);
             Console.ReadKey();
         }
@@ -1201,7 +1289,8 @@ namespace assignment1
             text.write_screen(text.text_queue.Count);
 
             //rewrite later
-            Console.WriteLine("How would you like to defend?\n1. Might\n2. Defense");
+            text.write_raw("How would you like to defend?",false);
+            Console.WriteLine("\n1.Might\n2.Defense");
             int option = verify_int_input(2);
 
             int defending_with = 0;
@@ -1211,7 +1300,7 @@ namespace assignment1
             if (player.items.Count() > 0)
             {
 
-                Console.WriteLine("Would you like to use any items? Your options are:");
+                text.write_raw("Would you like to use any items? Your options are:",false);
                 Console.WriteLine("1. Do not use any items");
                 for (int i = 0; i <= player.items.Count() - 1; i++)
                 {
@@ -1237,7 +1326,7 @@ namespace assignment1
             }
 
 
-            Console.WriteLine($"You rolled {defending_with}.");
+            text.write_raw($"You rolled {defending_with}.");
             Thread.Sleep(300);
 
             if (item_index != -1)
@@ -1251,7 +1340,7 @@ namespace assignment1
                     defending_with += player.items[item_index].bonus_def;
                 }
 
-                Console.WriteLine($"Your item changed that to {defending_with}.");
+                text.write_raw($"Your item changed that to {defending_with}.");
                 Thread.Sleep(300);
             }
 
@@ -1267,17 +1356,17 @@ namespace assignment1
 
             if (defending_with > 0)
             {
-                Console.WriteLine($"You win this round. The enemy takes {defending_with} damage.");
+                text.write_raw($"You win this round. The enemy takes {defending_with} damage.");
                 Thread.Sleep(300);
                 if (enemies[enemy_index].take_dmg(defending_with))
                 {
-                    Console.WriteLine($"You killed {enemies[enemy_index].name}.");
+                    text.write_raw($"You killed {enemies[enemy_index].name}.");
                     Thread.Sleep(300);
                     enemies.RemoveAt(enemy_index);
                     enemy_index--;
                     if (enemies.Count() == 0)
                     {
-                        Console.WriteLine("You win!");
+                        text.write_raw("You win!");
                         Thread.Sleep(300);
                         text.text_id = text.next_id;
                         state = STATE.Dialogue;
@@ -1326,12 +1415,14 @@ namespace assignment1
 
         private void player_attack()
         {
+            state = STATE.Enemy_Attack;
 
             text.write_screen(text.text_queue.Count);
 
-            Console.WriteLine("Would you like to:\n1. Attack an enemy\n2. Attempt to escape with a speed roll of 8+");
+            text.write_raw("Would you like to:",false);
+            Console.Write("\n1. Attack an enemy\n2. Attempt to escape with a speed roll of 8+\n3. Analyse an enemy");
 
-            int option = verify_int_input(2);
+            int option = verify_int_input(3);
 
             text.write_screen(text.text_queue.Count);
 
@@ -1339,7 +1430,7 @@ namespace assignment1
             {
                 state = STATE.Enemy_Attack;
 
-                Console.WriteLine("Which enemy would you like to attack?");
+                text.write_raw("Which enemy would you like to attack?",false);
                 for (int i = 0; i < enemies.Count; i++)
                 {
                     Console.WriteLine($"{i + 1}.  {enemies[i].name}");
@@ -1349,9 +1440,9 @@ namespace assignment1
 
 
                 int defending_with = player.check_str(rnd);
-                Console.WriteLine($"You rolled {defending_with}.");
+                text.write_raw($"You rolled {defending_with}.");
                 dmg = enemies[option].check_def(rnd);
-                Console.WriteLine($"The enemy rolled {dmg}.");
+                text.write_raw($"The enemy rolled {dmg}.");
 
                 defending_with -= dmg;
 
@@ -1359,17 +1450,17 @@ namespace assignment1
 
                 if (defending_with > 0)
                 {
-                    Console.WriteLine($"You win this round. The enemy takes {defending_with} damage.");
+                    text.write_raw($"You win this round. The enemy takes {defending_with} damage.");
                     Thread.Sleep(300);
                     if (enemies[enemy_index].take_dmg(defending_with))
                     {
-                        Console.WriteLine($"You killed {enemies[enemy_index].name}.");
+                        text.write_raw($"You killed {enemies[enemy_index].name}.");
                         Thread.Sleep(300);
                         enemies.RemoveAt(enemy_index);
                         enemy_index--;
                         if (enemies.Count() == 0)
                         {
-                            Console.WriteLine("You win!");
+                            text.write_raw("You win!");
                             Thread.Sleep(300);
                             text.text_id = text.next_id;
                             state = STATE.Dialogue;
@@ -1378,24 +1469,37 @@ namespace assignment1
                 }
                 else if (defending_with < 0)
                 {
-                    player_take_damage(player,-defending_with);
+                    player_take_damage(player, -defending_with);
                 }
 
             }
-            else
+            else if (option == 1)
             {
                 int attempt = player.check_spd(rnd);
                 if (attempt > 8)
                 {
-                    Console.WriteLine($"You succeeded with a roll of {attempt}.");
+                    text.write_raw($"You succeeded with a roll of {attempt}.");
                     text.text_id = text.next_id;
                     state = STATE.Dialogue;
                 }
                 else
                 {
-                    Console.WriteLine($"You failed with a roll of {attempt}.");
+                    text.write_raw($"You failed with a roll of {attempt}.");
                     state = STATE.Enemy_Attack;
                 }
+            }
+            else 
+            {
+                text.write_screen(text.text_queue.Count);
+                text.write_raw("Which enemy would you like to analyse?");
+                for (int i = 0; i < enemies.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}.  {enemies[i].name}");
+                }
+
+                option = verify_int_input(enemies.Count());
+                text.write_screen(text.text_queue.Count);
+                text.write_raw(enemies[option].desc);
             }
 
             if (state != STATE.Dialogue)
@@ -1409,7 +1513,7 @@ namespace assignment1
                     //check if stunned, if not, continue, if stunned, set stunned off but do not continue
                     if (player.party[i].stunned)
                     {
-                        Console.WriteLine($"{player.party[i].name} is stunned!");
+                        text.write_raw($"{player.party[i].name} is stunned!");
                         Thread.Sleep(300);
                         player.party[i].stunned = false;
                     }
@@ -1417,14 +1521,14 @@ namespace assignment1
                     {
                         //select random enemy
                         option = rnd.Next(0, enemies.Count);
-                        Console.WriteLine($"{player.party[i].name} is attacking {enemies[option].name}!");
+                        text.write_raw($"{player.party[i].name} is attacking {enemies[option].name}!");
                         Thread.Sleep(300);
                         //attack enemy using might
                         int defending_with = player.party[i].check_str(rnd);
-                        Console.WriteLine($"{player.party[i].name} rolled {defending_with}!");
+                        text.write_raw($"{player.party[i].name} rolled {defending_with}!");
                         Thread.Sleep(300);
                         int dmg = enemies[option].check_def(rnd);
-                        Console.WriteLine($"{enemies[option].name} rolled {dmg}!");
+                        text.write_raw($"{enemies[option].name} rolled {dmg}!");
                         Thread.Sleep(300);
                         //enemy takes damage as usual
                         defending_with -= dmg;
@@ -1433,14 +1537,27 @@ namespace assignment1
 
                         if (defending_with > 0)
                         {
-                            Console.WriteLine($"{player.party[i].name} won! {enemies[option].name} takes {defending_with} dmg!");
+                            text.write_raw($"{player.party[i].name} won! {enemies[option].name} takes {defending_with} dmg!");
                             Thread.Sleep(300);
-                            enemies[option].take_dmg(defending_with);
+                            if (enemies[enemy_index].take_dmg(defending_with))
+                            {
+                                text.write_raw($"{player.party[i].name} killed {enemies[enemy_index].name}.");
+                                Thread.Sleep(300);
+                                enemies.RemoveAt(enemy_index);
+                                enemy_index--;
+                                if (enemies.Count() == 0)
+                                {
+                                    text.write_raw("You win!");
+                                    Thread.Sleep(300);
+                                    text.text_id = text.next_id;
+                                    state = STATE.Dialogue;
+                                }
+                            }
                         }
                         else
                         {
                             //if party member loses, instead of taking damage, the party member is stunned
-                            Console.WriteLine($"{enemies[option].name} won! {player.party[i].name} is stunned!");
+                            text.write_raw($"{enemies[option].name} won! {player.party[i].name} is stunned!");
                             Thread.Sleep(300);
                             player.party[i].stunned = true;
                         }

@@ -6,27 +6,30 @@ using System.Threading.Tasks;
 
 namespace assignment1
 {
-    public class Enemy(string in_name)
+    public class Enemy(string in_name, string in_type)
     {
-
         public string name = in_name;
+        public string type = in_type;
+        public string desc = "";
         int str = 4;
         int def = 4;
         int spd = 4;
         int knowledge = 4;
         int charisma = 4;
         int sanity = 4;
+        
         public void setup()
         {
-            switch (name)
+            switch (type)
             {
-                case "Zombie":
-                    str = 4;
-                    def = 4;
-                    spd = 4;
-                    knowledge = 4;
-                    charisma = 4;
-                    sanity = 4;
+                case "lvl 1 - entity 1":
+                    str = 3;
+                    def = 3;
+                    spd = 3;
+                    knowledge = 3;
+                    charisma = 3;
+                    sanity = 3;
+                    desc = "A strange, zombie-like creature. It's hands are frostbitten and its eyes are sunken into dark sockets.";
                     break;
             }
         }

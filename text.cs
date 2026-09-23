@@ -72,33 +72,73 @@ namespace assignment1
             Console.Write(screens[i]);
         }
 
-        public void write_text(int i, bool input)
+        public void write_raw(string text, int pause = 40) 
         {
             int sleep_time = 0;
-            write_screen(i);
+            
             int line_break = 0;
-            for (int draw_char = 0; draw_char < text_queue[i].Length; draw_char++)
+            for (int draw_char = 0; draw_char < text.Length; draw_char++)
             {
-                if (line_break % max_length == 0)
+                if (line_break % max_length == 0 && line_break != 0)
                 {
                     Console.Write('\n');
                 }
-                Console.Write(text_queue[i][draw_char]);
-                sleep_time = pauses[i];
-                if (text_queue[i][draw_char] == '.' || text_queue[i][draw_char] == '!' || text_queue[i][draw_char] == '?' || text_queue[i][draw_char] == ',' || text_queue[i][draw_char] == ':' || text_queue[i][draw_char] == ';')
+                sleep_time = pause;
+                Console.Write(text[draw_char]);
+                if (text[draw_char] == '.' || text[draw_char] == '!' || text[draw_char] == '?' || text[draw_char] == ',' || text[draw_char] == ':' || text[draw_char] == ';')
                 {
                     sleep_time *= 3;
                 }
-                if (text_queue[i][draw_char] == '\n') 
+                if (text[draw_char] == '\n')
                 {
                     line_break = 0;
                 }
                 Thread.Sleep(sleep_time);
                 line_break++;
             }
+            Console.Write('\n');
+        }
+        public void write_raw(string text, bool new_line, int pause = 40) 
+        {
+            int sleep_time = 0;
+            
+            int line_break = 0;
+            for (int draw_char = 0; draw_char < text.Length; draw_char++)
+            {
+                if (line_break % max_length == 0 && line_break != 0)
+                {
+                    Console.Write('\n');
+                }
+                sleep_time = pause;
+                Console.Write(text[draw_char]);
+                if (text[draw_char] == '.' || text[draw_char] == '!' || text[draw_char] == '?' || text[draw_char] == ',' || text[draw_char] == ':' || text[draw_char] == ';')
+                {
+                    sleep_time *= 3;
+                }
+                if (text[draw_char] == '\n')
+                {
+                    line_break = 0;
+                }
+                Thread.Sleep(sleep_time);
+                line_break++;
+            }
+            if (new_line)
+            {
+                Console.Write('\n');
+            }
+        }
+
+        public void write_text(int i, bool input)
+        {
+
             Console.Write("\n");
+
+            write_screen(i);
+            write_raw(text_queue[i], pauses[i]);
+
             if (!input)
             {
+
                 Thread.Sleep(pauses[i] * 3);
                 if (!(option_ids.Count() != 0 && i == text_queue.Count()-1))
                 {

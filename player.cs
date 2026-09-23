@@ -50,20 +50,20 @@ namespace assignment1
         public List<Party_member> party = [];
 
 
-        public List<bool> checks = [false, false, false, false, false, false, false, false, false];
+        public List<bool> checks = [
+            false, // 0 - lvl 1 enter
+            false, // 1 - lvl 2 enter
+            false, // 2 - lvl 3 enter
+            false, // 3 - lvl 1 enter
+            false, // 4 - lvl 2 enter
+            false, // 5 - lvl 3 enter
+            false, // 6 - rolls explained
+            false, // 7 - lvl 3 - maze - physical trait
+            false, // 8 - lvl 3 - maze - mental trait
+            false, // 9 - lvl 2 - start - mental trait
+            ];
 
         string checkpoint_id;
-
-        /* 0 - lvl 1 enter
-         * 1 - lvl 2 enter
-         * 2 - lvl 3 enter
-         * 3 - lvl 1 enter
-         * 4 - lvl 2 enter
-         * 5 - lvl 3 enter
-         * 6 - rolls explained
-         * 7 - lvl 3 - maze - physical trait
-         * 8 - lvl 3 - maze - mental trait
-         */
 
         public int x = 3;
         public int y = 6;
