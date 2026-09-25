@@ -712,7 +712,7 @@ namespace assignment1
                     text.add("You raise your fist to knock on the door, but this time the door swings open by itself before your fist reaches the wood.");
                     text.add("The air in the building is incredibly stagnant.");
                     skip = true;
-                    text.next_id = "lvl 1 - enter house";
+                    text.next_id = "lvl 1 - enter house - enemies";
                     break;
                 case "lvl 1 - open door":
                     pet_name = player.party[player.party.Count() - 1].name;
@@ -730,6 +730,7 @@ namespace assignment1
                     enemies = [new Enemy("Entity","lvl 1 - entity 1"), new Enemy("Entity", "lvl 1 - entity 1"), new Enemy("Entity", "lvl 1 - entity 1"), new Enemy("Entity", "lvl 1 - entity 1"), new Enemy("Entity", "lvl 1 - entity 1")];
                     player.set_checkpoint(text);
                     change_state = STATE.Setup_Combat;
+                    text.next_id = "lvl 1 - enter house - defeat enemies";
                     break;
                 case "lvl 1 - enter house - defeat enemies":
                     pet_name = player.party[player.party.Count() - 1].name;
@@ -741,10 +742,114 @@ namespace assignment1
                     text.next_id = "lvl 1 - foyer";
                     break;
                 case "lvl 1 - foyer":
-                    text.add("You are standing in the foyer. Where would you like to go?");
-                    // ----------------------------------------------------------------------------------------------------------------- update here
+                    text.add("You are standing in the foyer. What would you like to do?");
+                    text.option_ids = ["lvl 1 - living room", "lvl 1 - kitchen", "lvl 1 - upper landing"];
+                    text.option_names = ["Go West", "Go East", "Go Upstairs"];
                     break;
-
+                case "lvl 1 - living room":
+                    text.add("There is a worn sofa on one side of the living room, facing a rotting coffee table. What would you like to do?");
+                    text.option_ids = ["lvl 1 - kitchen", "lvl 1 - foyer", "lvl 1 - living room - coffee table"];
+                    text.option_names = ["Go North East", "Go South East", "Inspect the coffee table"];
+                    break;
+                case "lvl 1 - living room - coffee table":
+                    text.add(player.check_to_add_item("Coffee Table Leg", "You touch the table. It falls apart. You take the leg.", "You have already taken the leg."));
+                    skip = true;
+                    text.next_id = "lvl 1 - living room";
+                    break;
+                case "lvl 1 - kitchen":
+                    text.add("There is mould in the kitchen. It smells stale and dusty, the counters grey and muddy. What would you like to do?");
+                    check_stat_id = "sanity";
+                    text.option_ids = ["lvl 1 - living room", "lvl 1 - foyer", "lvl 1 - kitchen - look through drawers"];
+                    text.option_names = ["Go North West", "Go South West", "Look through the drawers"];
+                    break;
+                case "lvl 1 - kitchen - look through drawers":
+                    text.add("You make a sanity roll.");
+                    text.add($"You rolled {player.roll}.");
+                    if (player.roll > 2)
+                    {
+                        if (player.roll > 4)
+                        {
+                            if (player.roll > 6)
+                            {
+                                text.add(player.check_to_add_item("Knife", "You found a knife in the drawers.", "There was nothing to find."));
+                            }
+                            else
+                            {
+                                text.add(player.check_to_add_item("Fork", "You found a fork in the drawers.", "There was nothing to find."));
+                            }
+                        }
+                        else
+                        {
+                            text.add(player.check_to_add_item("Spoon", "You found a spoon in the drawers.", "There was nothing to find."));
+                        }
+                    }
+                    else 
+                    {
+                        text.add("There was nothing to find.");
+                    }
+                    skip = true;
+                    text.next_id = "lvl 1 - kitchen";
+                    break;
+                case "lvl 1 - upper landing":
+                    text.add("You are standing in the upper landing. What would you like to do?");
+                    check_stat_id = "knowledge";
+                    text.option_ids = ["lvl 1 - master bedroom", "lvl 1 - servants quarters", "lvl 1 - foyer"];
+                    text.option_names = ["Go West", "Go East", "Go Downstairs"];
+                    break;
+                case "lvl 1 - master bedroom":
+                    text.add("The bed is ornate, but still, like the rest of the house, it's dishevelled.");
+                    if (!player.checks[11])
+                    {
+                        text.add("It's strangely calm in this room. You gain one point in sanity.");
+                        player.change_sanity(1);
+                    }
+                    text.add("What would you like to do?");
+                    check_stat_id = "spd";
+                    text.option_ids = ["lvl 1 - upper landing","lvl 1 - master bedroom - look around"];
+                    text.option_names = ["Go East", "Look around"];
+                    break;
+                case "lvl 1 - master bedroom - look around":
+                    if (player.inventory_check("Green Gemstone"))
+                    {
+                        text.add("There is nothing of interest in the room.");
+                    }
+                    else
+                    {
+                        text.add("You spot something under the bed. It shines faintly in the light. You must make a speed roll to try and get to it.");
+                        text.add($"You rolled {player.roll}.");
+                        if (player.roll > 7)
+                        {
+                            text.add(player.check_to_add_item("Green Gemstone", "You found the Green Gemstone.", "You were unable to reach the item."));
+                        }
+                    }
+                    skip = true;
+                    text.next_id = "lvl 1 - master bedroom";
+                    break;
+                case "lvl 1 - servants quarters":
+                    if (!player.checks[10])
+                    {
+                        text.add("You make a knowledge roll.");
+                        text.add($"You rolled {player.roll}.");
+                        if (player.roll > 3)
+                        {
+                            player.checks[10] = true;
+                        }
+                    }
+                    text.add("You are standing in the servants quarters. What would you like to do?");
+                    text.option_ids = ["lvl 1 - upper landing"];
+                    text.option_names = ["Go West"];
+                    if (player.checks[10]) 
+                    {
+                        text.option_ids.Add("lvl 1 - loft");
+                        text.option_names.Add("Climb the ladder");
+                    }
+                    break;
+                case "lvl 1 - loft":
+                    text.add("You are in the loft. What would you like to do?");
+                    text.option_ids = ["lvl 1 - upper landing"];
+                    text.option_names = ["Climb the ladder"];
+                    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- update here
+                    break;
                 // ------ LVL 2 ------ //
 
 
@@ -833,6 +938,9 @@ namespace assignment1
                     text.add("You make a knowledge roll.");
                     text.add($"You rolled {player.roll}.");
 
+                    skip = true;
+                    text.next_id = "lvl 2 - explore start";
+
                     if (player.roll > 4 && !player.checks[9])
                     {
                         player.checks[9] = true;
@@ -843,8 +951,6 @@ namespace assignment1
                     else
                     {
                         text.add("Nothing happens.");
-                        skip = true;
-                        text.next_id = "lvl 2 - explore start";
                     }
                     break;
                 case "lvl 2 - approach big top 3":
@@ -878,6 +984,7 @@ namespace assignment1
                     }
                     text.add("Suddenly, the peacock's head swivels towards you, staring daggers into your soul.");
                     text.add("Then, the tent disapears, along with the peacock.");
+                    // ---------------------------------------------------------------------------------------------------------------------------- update here
                     break;
 
 
@@ -950,7 +1057,12 @@ namespace assignment1
                     text.add($"You rolled {player.roll}.");
                     if (player.roll > 6)
                     {
-                        // success
+                        text.add("You are able to proceed.");
+                        text.add("You push into the narrowing corridor until it opens up into a large, open space, containing a circular fort in the centre of a wall of what appears to be the maze, stretching up into the sky.");
+                        text.add("You think you see something behind the crenelations on the fort. You need to make a sanity roll to identify it.");
+                        check_stat_id = "sanity";
+                        skip = true;
+                        text.next_id = "lvl 3 - arena outskirts - start";
                     }
                     else 
                     {
@@ -1006,6 +1118,32 @@ namespace assignment1
 
                     skip = true;
                     text.next_id = "lvl 3 - maze mouth";
+                    break;
+                case "lvl 3 - arena outskirts - start":
+                    text.add($"You rolled {player.roll}.");
+                    if (player.roll > 3)
+                    {
+                        if (player.roll > 5)
+                        {
+                            text.add("The figure is an armoured knight, standing with its broadsword in hand. She nods at you before turning and walking away. You feel a sense of strength imbue you.");
+                            physical_change = 1;
+                        }
+                        else
+                        {
+                            text.add("It is a figure, standing on the fort. The figure raises their sword, then disappears.");
+                        }
+                    }
+                    else 
+                    {
+                        text.add("You squint. Try as you might, you cannot identify what is in the fort. You take one mental damage.");
+                        mental_change = -1;
+                    }
+                    skip = true;
+                    text.next_id = "lvl 3 - arena outskirts - explore start";
+                    break;
+                case "lvl 3 - arena outskirts - explore start":
+                    text.add("What would you like to do?");
+                    // --------------------------------------------------------------------------------------------------------------------------------------------------------------- update here
                     break;
 
             }
@@ -1300,7 +1438,7 @@ namespace assignment1
             if (player.items.Count() > 0)
             {
 
-                text.write_raw("Would you like to use any items? Your options are:",false);
+                text.write_raw("Would you like to use any items? Your options are:");
                 Console.WriteLine("1. Do not use any items");
                 for (int i = 0; i <= player.items.Count() - 1; i++)
                 {

@@ -63,6 +63,24 @@ namespace assignment1
                 case "Rope":
                     bonus_def = 2;
                     break;
+                case "Coffee Table Leg":
+                    bonus_str = 1;
+                    bonus_def = 1;
+                    break;
+                case "Knife":
+                    bonus_str = 2;
+                    bonus_sanity = 2;
+                    break;
+                case "Fork":
+                    bonus_str = 2;
+                    break;
+                case "Spoon":
+                    bonus_def = 1;
+                    break;
+                case "Green Gemstone":
+                    bonus_sanity = 5;
+                    bonus_def = 2;
+                    break;
             }
         }
     }

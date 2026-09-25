@@ -61,6 +61,8 @@ namespace assignment1
             false, // 7 - lvl 3 - maze - physical trait
             false, // 8 - lvl 3 - maze - mental trait
             false, // 9 - lvl 2 - start - mental trait
+            false, // 10 - lvl 1 - servants quarters - knowledge check
+            false, // 11 - lvl 1 - master bedroom - sanity gain
             ];
 
         string checkpoint_id;
